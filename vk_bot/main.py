@@ -293,7 +293,9 @@ async def handle_text(vk_api_method: Any, user_id: int, text: str) -> None:
     )
 
 
-async def run_vk_bot() -> None:
+def run_vk_bot() -> None:
+    import time
+
     vk_session = vk_api.VkApi(token=config.group_token)
     vk = vk_session.get_api()
     longpoll = VkBotLongPoll(vk_session, config.group_id)
@@ -312,8 +314,8 @@ async def run_vk_bot() -> None:
                 user_id = event.object.message["from_id"]
                 text = event.object.message.get("text", "")
 
-                await handle_text(vk, user_id, text)
+                asyncio.run(handle_text(vk, user_id, text))
 
         except Exception as e:
             logger.exception("Ошибка в VK-боте: %s", e)
-            await asyncio.sleep(3)
+            time.sleep(3)

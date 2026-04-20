@@ -4,6 +4,10 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 from bot.config import load_config
 from bot.database.requests import (
     get_new_key_requests,
@@ -261,8 +265,10 @@ async def process_issue_request(message: Message, state: FSMContext, bot: Bot) -
                 access_text=access_text,
             )
         except Exception as e:
+            logger.exception("Ошибка при продлении подписки")
+
             await message.answer(
-                "Не удалось продлить подписку в базе.\n"
+                "Не удалось продлить подписку.\n"
                 f"Ошибка: {e}"
             )
             return
@@ -289,13 +295,23 @@ async def process_issue_request(message: Message, state: FSMContext, bot: Bot) -
     if request_data["plan_type"] == "trial":
         mark_trial_as_used(user_telegram_id)
 
-    create_subscription_from_request(
-        telegram_id=user_telegram_id,
-        request_id=request_id,
-        plan_type=request_data["plan_type"],
-        days_count=request_data["days_count"],
-        access_text=access_text,
-    )
+    try:
+        create_subscription_from_request(
+            telegram_id=user_telegram_id,
+            request_id=request_id,
+            plan_type=request_data["plan_type"],
+            days_count=request_data["days_count"],
+            access_text=access_text,
+        )
+    except Exception as e:
+        logger.exception("Ошибка при создании подписки")
+
+        await message.answer(
+            "Не удалось создать подписку в базе.\n"
+            f"Ошибка: {e}"
+        )
+        await state.clear()
+        return
 
     update_request_status(request_id, "issued")
 

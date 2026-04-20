@@ -181,13 +181,23 @@ async def confirm_manual_sub(callback: CallbackQuery, state: FSMContext) -> None
 
     data = await state.get_data()
 
-    subscription_id = create_manual_subscription(
-        telegram_id=data["telegram_id"],
-        plan_type=data["plan_type"],
-        days_count=data.get("days_count"),
-        access_text=data["access_text"],
-        is_unlimited=data["is_unlimited"],
-    )
+    try:
+        subscription_id = create_manual_subscription(
+            telegram_id=data["telegram_id"],
+            plan_type=data["plan_type"],
+            days_count=data.get("days_count"),
+            access_text=data["access_text"],
+            is_unlimited=data["is_unlimited"],
+        )
+    except Exception as e:
+        logger.exception("Ошибка при ручном создании подписки")
+
+        await callback.message.answer(
+            "Не удалось создать подписку вручную.\n"
+            f"Ошибка: {e}"
+        )
+        await state.clear()
+        return
 
     await state.clear()
     await callback.message.answer(f"Подписка создана. ID подписки: {subscription_id}")

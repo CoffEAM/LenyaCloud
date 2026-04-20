@@ -11,9 +11,12 @@ from vk_bot.main import run_vk_bot
 
 
 async def main() -> None:
+    telegram_task = asyncio.create_task(run_telegram_bot())
+    vk_task = asyncio.to_thread(run_vk_bot)
+
     await asyncio.gather(
-        run_telegram_bot(),
-        run_vk_bot(),
+        telegram_task,
+        vk_task,
     )
 
 
