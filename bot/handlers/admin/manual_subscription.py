@@ -3,6 +3,10 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 from bot.config import load_config
 from bot.database.subscriptions import create_manual_subscription
 from bot.keyboards.manual_subscription import (
