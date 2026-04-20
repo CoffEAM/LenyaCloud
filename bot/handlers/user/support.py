@@ -32,13 +32,22 @@ async def safe_edit(callback: CallbackQuery, text: str, reply_markup=None) -> No
 
 
 def get_support_header_text() -> str:
+    config = load_config()
     status = get_server_status()
+
+    vk_hint = ""
+    if config.links.vk_group_link:
+        vk_hint = (
+            f"\n\nЕсли Telegram работает нестабильно, можно написать через VK:\n"
+            f"{config.links.vk_group_link}"
+        )
 
     if status["status_code"] == "maintenance":
         return (
             "Поддержка.\n\n"
             "Сейчас ведутся технические работы.\n"
             f"{status['status_text']}"
+            f"{vk_hint}"
         )
 
     if status["status_code"] == "issues":
@@ -46,19 +55,33 @@ def get_support_header_text() -> str:
             "Поддержка.\n\n"
             "Сейчас есть известные проблемы с подключением.\n"
             f"{status['status_text']}"
+            f"{vk_hint}"
         )
 
-    return "Поддержка.\n\nЗдесь можно найти решение частых проблем или написать обращение."
+    return (
+        "Поддержка.\n\n"
+        "Здесь можно найти решение частых проблем или написать обращение."
+        f"{vk_hint}"
+    )
 
 
 def get_status_warning_text() -> str | None:
+    config = load_config()
     status = get_server_status()
+
+    vk_hint = ""
+    if config.links.vk_group_link:
+        vk_hint = (
+            f"\n\nЕсли Telegram будет недоступен, можно написать через VK:\n"
+            f"{config.links.vk_group_link}"
+        )
 
     if status["status_code"] == "maintenance":
         return (
             "Сейчас ведутся технические работы.\n\n"
             f"{status['status_text']}\n\n"
             "Проблема может быть связана с этим."
+            f"{vk_hint}"
         )
 
     if status["status_code"] == "issues":
@@ -66,6 +89,7 @@ def get_status_warning_text() -> str | None:
             "Сейчас есть известные проблемы с подключением.\n\n"
             f"{status['status_text']}\n\n"
             "Проблема может быть связана с этим."
+            f"{vk_hint}"
         )
 
     return None

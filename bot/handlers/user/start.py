@@ -21,7 +21,9 @@ async def cmd_start(message: Message) -> None:
     upsert_user(message.from_user, is_admin=is_admin)
 
     await message.answer(
-        "Добро пожаловать в VPN-бот.\n"
-        "Через меню ниже можно отправить заявку, посмотреть подписку или написать в поддержку.",
+        "Добро пожаловать в VPN-бот.\n\n"
+        "Через меню ниже можно отправить заявку, посмотреть подписку или написать в поддержку.\n"
+        "Если VPN не работает и Telegram недоступен, можно воспользоваться VK:\n"
+        f"{config.links.vk_group_link}",
         reply_markup=get_main_menu()
     )

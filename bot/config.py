@@ -20,9 +20,15 @@ class PaymentConfig:
 
 
 @dataclass
+class LinksConfig:
+    vk_group_link: str
+
+
+@dataclass
 class Config:
     tg_bot: TgBot
     payment: PaymentConfig
+    links: LinksConfig
 
 
 def parse_admins(admins_raw: str) -> list[int]:
@@ -42,6 +48,7 @@ def load_config() -> Config:
     admins_raw = os.getenv("ADMINS", "").strip()
     card_number = os.getenv("CARD_NUMBER", "").strip()
     card_holder = os.getenv("CARD_HOLDER", "").strip()
+    vk_group_link = os.getenv("VK_GROUP_LINK", "").strip()
 
     if not token:
         raise ValueError("Не найден BOT_TOKEN в .env")
@@ -54,5 +61,8 @@ def load_config() -> Config:
         payment=PaymentConfig(
             card_number=card_number,
             card_holder=card_holder,
+        ),
+        links=LinksConfig(
+            vk_group_link=vk_group_link,
         )
     )
